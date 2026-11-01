@@ -167,6 +167,9 @@ app.use((req, res) => {
 
 // Error-handling middleware returning 500 without leaking internal details
 app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).json({ error: 'Invalid JSON payload' });
+  }
   console.error('Internal Server Error:', err.message);
   res.status(500).json({ error: 'Internal server error' });
 });
