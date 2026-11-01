@@ -22,6 +22,18 @@ function isPositiveInteger(value) {
   return /^\d+$/.test(value) && Number(value) > 0;
 }
 
+// Helper function to validate book body inputs
+function validateBookPayload(body) {
+  const { title, author, price, pages } = body || {};
+
+  const isTitleValid = typeof title === 'string' && title.trim().length > 0;
+  const isAuthorValid = typeof author === 'string' && author.trim().length > 0;
+  const isPriceValid = typeof price === 'number' && Number.isInteger(price) && price >= 0;
+  const isPagesValid = typeof pages === 'number' && Number.isInteger(pages) && pages >= 0;
+
+  return isTitleValid && isAuthorValid && isPriceValid && isPagesValid;
+}
+
 // Route 1: GET /books/ - Retrieve all books
 app.get('/books/', async (req, res, next) => {
   try {
@@ -53,6 +65,32 @@ app.get('/books/:bookId/', async (req, res, next) => {
     }
 
     res.status(200).json(book);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Route 3: POST /books/ - Create a new book
+app.post('/books/', async (req, res, next) => {
+  try {
+    const { title, author, price, pages } = req.body;
+
+    // Validate body fields
+    if (!validateBookPayload(req.body)) {
+      return res.status(400).json({
+        error: 'Invalid input: title and author must be non-empty strings; price and pages must be non-negative integers'
+      });
+    }
+
+    // Insert new book using ? placeholders
+    const insertBookQuery = 'INSERT INTO book (title, author, price, pages) VALUES (?, ?, ?, ?);';
+    const result = await db.run(insertBookQuery, [title.trim(), author.trim(), price, pages]);
+
+    // Respond with status 201 Created and newly assigned ID
+    res.status(201).json({
+      message: 'Book added successfully',
+      bookId: result.lastID
+    });
   } catch (error) {
     next(error);
   }
