@@ -1,28 +1,28 @@
-// Import required modules
+// Import required core and third-party modules
 const express = require('express');
 const path = require('path');
 const { open } = require('sqlite');
 const sqlite3 = require('sqlite3');
 
-// Create the Express application
+// Create the Express application instance
 const app = express();
 
 // Middleware to parse incoming JSON request bodies
 app.use(express.json());
 
-// Configuration: Port and Database file path from environment or defaults
+// Configuration: Port and Database file path from environment variables or defaults
 const PORT = process.env.PORT || 3000;
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'bookstore.db');
 
-// Global database connection variable
+// Global database connection instance
 let db = null;
 
-// Helper function to validate positive integer IDs
+// Helper function to validate positive integer IDs (1, 2, 3...)
 function isPositiveInteger(value) {
   return /^\d+$/.test(value) && Number(value) > 0;
 }
 
-// Helper function to validate book body inputs
+// Helper function to validate book request payload
 function validateBookPayload(body) {
   const { title, author, price, pages } = body || {};
 
@@ -75,7 +75,7 @@ app.post('/books/', async (req, res, next) => {
   try {
     const { title, author, price, pages } = req.body;
 
-    // Validate body fields
+    // Validate request body
     if (!validateBookPayload(req.body)) {
       return res.status(400).json({
         error: 'Invalid input: title and author must be non-empty strings; price and pages must be non-negative integers'
@@ -86,7 +86,7 @@ app.post('/books/', async (req, res, next) => {
     const insertBookQuery = 'INSERT INTO book (title, author, price, pages) VALUES (?, ?, ?, ?);';
     const result = await db.run(insertBookQuery, [title.trim(), author.trim(), price, pages]);
 
-    // Respond with status 201 Created and newly assigned ID
+    // Respond with status 201 Created and newly generated bookId
     res.status(201).json({
       message: 'Book added successfully',
       bookId: result.lastID
@@ -94,6 +94,81 @@ app.post('/books/', async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+// Route 4: PUT /books/:bookId/ - Update an existing book by ID
+app.put('/books/:bookId/', async (req, res, next) => {
+  try {
+    const { bookId } = req.params;
+
+    // Validate that bookId is a positive integer
+    if (!isPositiveInteger(bookId)) {
+      return res.status(400).json({ error: 'Book ID must be a positive integer' });
+    }
+
+    // Validate request body
+    if (!validateBookPayload(req.body)) {
+      return res.status(400).json({
+        error: 'Invalid input: title and author must be non-empty strings; price and pages must be non-negative integers'
+      });
+    }
+
+    // Check if book exists before updating
+    const checkBookQuery = 'SELECT * FROM book WHERE id = ?;';
+    const existingBook = await db.get(checkBookQuery, [bookId]);
+
+    if (!existingBook) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+
+    // Update book using ? placeholders
+    const { title, author, price, pages } = req.body;
+    const updateBookQuery = 'UPDATE book SET title = ?, author = ?, price = ?, pages = ? WHERE id = ?;';
+    await db.run(updateBookQuery, [title.trim(), author.trim(), price, pages, bookId]);
+
+    res.status(200).json({ message: 'Book updated successfully' });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Route 5: DELETE /books/:bookId/ - Delete a book by ID
+app.delete('/books/:bookId/', async (req, res, next) => {
+  try {
+    const { bookId } = req.params;
+
+    // Validate that bookId is a positive integer
+    if (!isPositiveInteger(bookId)) {
+      return res.status(400).json({ error: 'Book ID must be a positive integer' });
+    }
+
+    // Check if book exists before deleting
+    const checkBookQuery = 'SELECT * FROM book WHERE id = ?;';
+    const existingBook = await db.get(checkBookQuery, [bookId]);
+
+    if (!existingBook) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+
+    // Delete book using ? placeholder
+    const deleteBookQuery = 'DELETE FROM book WHERE id = ?;';
+    await db.run(deleteBookQuery, [bookId]);
+
+    res.status(200).json({ message: 'Book deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Catch-all 404 handler for unknown routes
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+// Error-handling middleware returning 500 without leaking internal details
+app.use((err, req, res, next) => {
+  console.error('Internal Server Error:', err.message);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 // Initialize SQLite database and start the Express server
@@ -116,7 +191,7 @@ async function initializeDBAndServer() {
   }
 }
 
-// Call initialization function to start DB and server
+// Call initialization function at the bottom
 initializeDBAndServer();
 
 module.exports = app;
