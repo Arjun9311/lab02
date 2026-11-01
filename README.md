@@ -127,3 +127,4 @@ On platforms such as Render's free tier, the application runs on containers with
   *Solution:* [Describe how it was resolved, e.g., wrapped `db.open()` and `app.listen()` inside `initializeDBAndServer()` to ensure DB readiness before accepting HTTP traffic]
 - *Problem 2:* [Describe any issue with parameter validation or SQL syntax]  
   *Solution:* [Describe resolution using strict regex validation and parameterised queries]
+
