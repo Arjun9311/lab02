@@ -1,0 +1,14 @@
+{
+  "name": "lab-02-course-root",
+  "version": "1.0.0",
+  "description": "Root configuration to support seamless Render deployment",
+  "private": true,
+  "scripts": {
+    "postinstall": "npm --prefix lab-02 install",
+    "build": "npm --prefix lab-02 install",
+    "start": "npm --prefix lab-02 start"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

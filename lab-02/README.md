@@ -104,6 +104,15 @@ Parameterised queries with **`?` placeholders** prevent this by separating the q
 
 On platforms such as Render's free tier, the application runs on containers with an **ephemeral filesystem**. This means that any disk modifications—such as adding, updating, or deleting rows in `bookstore.db` at runtime—are stored only temporarily and are wiped whenever the service restarts, sleeps from inactivity, or redeploys. On each fresh container boot, the database resets to the `bookstore.db` file committed in the Git repository.
 
+### How to deploy on Render (Zero-Error Setup):
+- **Option 1 (Blueprint / Automatic)**: In Render dashboard, click **New +** -> **Blueprint**, select this repository, and click **Apply**. The included `render.yaml` automatically configures the service, root directory (`lab-02`), and health checks.
+- **Option 2 (Web Service / Manual)**: In Render dashboard, click **New +** -> **Web Service**:
+  - **Environment**: Node
+  - **Root Directory**: `lab-02` (or leave blank; the root script also forwards seamlessly to `lab-02`)
+  - **Build Command**: `npm install`
+  - **Start Command**: `npm start`
+  - **Health Check Path**: `/books/`
+
 ## Notes
 
 ### Problems faced and how I solved them

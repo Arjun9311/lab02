@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: lab-02-bookstore-api
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: lab-02
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /books/
+    envVars:
+      - key: NODE_ENV
+        value: production

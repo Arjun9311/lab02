@@ -34,6 +34,11 @@ function validateBookPayload(body) {
   return isTitleValid && isAuthorValid && isPriceValid && isPagesValid;
 }
 
+// Root route: Redirect to /books/ for browser convenience and cloud health checks
+app.get('/', (req, res) => {
+  res.redirect('/books/');
+});
+
 // Route 1: GET /books/ - Retrieve all books
 app.get('/books/', async (req, res, next) => {
   try {
@@ -183,9 +188,9 @@ async function initializeDBAndServer() {
       driver: sqlite3.Database
     });
 
-    // Start server only after database connection succeeds
-    app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}/`);
+    // Start server listening on all network interfaces (0.0.0.0) for cloud compatibility
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server running at http://0.0.0.0:${PORT}/`);
     });
   } catch (error) {
     // Log error and exit process on connection failure
