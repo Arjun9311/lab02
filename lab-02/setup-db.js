@@ -45,3 +45,4 @@ setupDatabase().catch((err) => {
   console.error('Error setting up database:', err);
   process.exit(1);
 });
+

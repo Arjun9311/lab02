@@ -5,3 +5,4 @@ CREATE TABLE IF NOT EXISTS book (
   price INTEGER,
   pages INTEGER
 );
+

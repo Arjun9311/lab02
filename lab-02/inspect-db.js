@@ -21,3 +21,4 @@ inspect(queryArg).catch((err) => {
   console.error('Database query error:', err.message);
   process.exit(1);
 });
+

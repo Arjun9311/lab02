@@ -8,3 +8,4 @@ INSERT INTO book (title, author, price, pages) VALUES ('Brave New World', 'Aldou
 INSERT INTO book (title, author, price, pages) VALUES ('Crime and Punishment', 'Fyodor Dostoevsky', 16, 545);
 INSERT INTO book (title, author, price, pages) VALUES ('The Alchemist', 'Paulo Coelho', 11, 208);
 INSERT INTO book (title, author, price, pages) VALUES ('Clean Code', 'Robert C. Martin', 35, 464);
+
