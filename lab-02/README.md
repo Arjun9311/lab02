@@ -1,6 +1,6 @@
 # Lab 2: SQLite database and CRUD routes
 
-**Name:** [YOUR NAME] · **Registration No:** [YOUR REG NO] · **Section:** [YOUR SECTION]  
+**Name:** VARUKURI ARJUN · **Registration No:** 252U1R1268 · **Section:** CSE-2E (211)  
 **Live link:** [PASTE DEPLOYED URL HERE, or explain why it couldn't be deployed and rely on the Postman screenshots]
 
 ## How to run

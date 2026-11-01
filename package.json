@@ -2,6 +2,7 @@
   "name": "lab-02-course-root",
   "version": "1.0.0",
   "description": "Root configuration to support seamless Render deployment",
+  "author": "VARUKURI ARJUN",
   "private": true,
   "scripts": {
     "postinstall": "npm --prefix lab-02 install",
@@ -12,3 +13,4 @@
     "node": ">=18.0.0"
   }
 }
+
